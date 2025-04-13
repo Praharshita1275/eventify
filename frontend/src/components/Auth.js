@@ -6,7 +6,8 @@ function Auth({ onRegister, onLogin }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [passwordError, setPasswordError] = useState("");
+const [passwordError, setPasswordError] = useState("");
+const [role, setRole] = useState("member"); // Default role matching backend
   const navigate = useNavigate();
 
   // Toggle between Login and Register mode
@@ -47,8 +48,8 @@ function Auth({ onRegister, onLogin }) {
         return;
       }
 
-      console.log("Registering:", { name, email, password });
-      if (onRegister) onRegister({ name, email, password });
+              console.log("Registering:", { name, email, password, role });
+              if (onRegister) onRegister({ name, email, password, role });
 
       setIsLogin(true);
       setName(""); 
@@ -64,11 +65,11 @@ function Auth({ onRegister, onLogin }) {
   const isFormValid = isLogin ? email && password : name && email && password && !passwordError;
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gradient-to-b from-white to-blue-100">
-      <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg border border-blue-300 transform transition duration-300 hover:scale-105">
+    <div className="flex justify-center items-center h-screen bg-gradient-to-b from-green-50 to-blue-100">
+      <div className="w-full max-w-md bg-gray-100 p-8 rounded-2xl shadow-lg border border-green-200 transform transition duration-300 hover:scale-105">
         
         {/* Header Section */}
-        <h2 className="text-3xl font-extrabold text-center text-blue-700 mb-4">
+        <h2 className="text-3xl font-extrabold text-center text-indigo-700 mb-4">
           {isLogin ? "Welcome Back!" : "Join Eventify Today"}
         </h2>
         <p className="text-center text-gray-500 mb-6">
@@ -120,13 +121,29 @@ function Auth({ onRegister, onLogin }) {
             {passwordError && <p className="text-red-500 text-sm mt-1">{passwordError}</p>}
           </div>
 
+          {!isLogin && (
+            <div className="mb-4">
+              <label className="block text-gray-700 font-semibold mb-2">Role</label>
+              <select
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                required
+              >
+                <option value="member">Member</option>
+                <option value="coordinator">Coordinator</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+          )}
+
           {/* Submit Button */}
           <button
             type="submit"
             disabled={!isFormValid}
             className={`w-full text-white font-semibold py-3 rounded-lg transition duration-300 transform hover:scale-105 ${
               isFormValid
-                ? "bg-gradient-to-r from-blue-500 to-blue-700 hover:opacity-90"
+                ? "bg-gradient-to-r from-indigo-500 to-purple-600 hover:opacity-90"
                 : "bg-gray-400 cursor-not-allowed"
             }`}
           >
@@ -138,7 +155,7 @@ function Auth({ onRegister, onLogin }) {
         <p className="text-center mt-6 text-gray-600">
           {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
           <span
-            className="text-blue-500 font-bold cursor-pointer transition hover:underline"
+            className="text-indigo-600 font-bold cursor-pointer transition hover:underline"
             onClick={toggleAuthMode}
           >
             {isLogin ? "Register" : "Login"}
