@@ -1,22 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const resourceController = require('../controllers/resourceController');
-const { authenticate } = require('../middleware/auth');
+const { protect } = require('../middleware/auth');
 const { checkRole } = require('../middleware/roleCheck');
 
 // Public routes
-router.get('/', resourceController.getAllResources);
-router.get('/:id', resourceController.getResourceById);
-router.get('/category/:category', resourceController.getResourcesByCategory);
+router.get('/', resourceController.getResources);
+router.get('/:id', resourceController.getResource);
+router.get('/:id/availability', resourceController.getResourceAvailability);
 
-// Protected routes for admins and content creators
-router.post('/', authenticate, checkRole('admin', 'content_creator'), resourceController.createResource);
-router.put('/:id', authenticate, checkRole('admin', 'content_creator'), resourceController.updateResource);
-router.delete('/:id', authenticate, checkRole('admin', 'content_creator'), resourceController.deleteResource);
+// Protected routes for admins
+router.post('/', protect, checkRole('admin'), resourceController.createResource);
+router.put('/:id', protect, checkRole('admin'), resourceController.updateResource);
+router.delete('/:id', protect, checkRole('admin'), resourceController.deleteResource);
 
-// User interaction routes
-router.post('/:id/bookmark', authenticate, resourceController.bookmarkResource);
-router.delete('/:id/bookmark', authenticate, resourceController.removeBookmark);
-router.post('/:id/rate', authenticate, resourceController.rateResource);
+// Resource availability check
+router.post('/check-availability', resourceController.checkResourceAvailability);
 
 module.exports = router;

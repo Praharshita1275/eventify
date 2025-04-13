@@ -1,17 +1,45 @@
 const mongoose = require('mongoose');
+const retry = require('async-retry');
+const config = require('./config');
 
 const connectDB = async () => {
-  try {
-    const conn = await mongoose.connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
-  } catch (error) {
-    console.error(`Error: ${error.message}`);
-    process.exit(1);
-  }
+  await retry(
+    async () => {
+      const conn = await mongoose.connect(config.mongoURI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        maxPoolSize: 10, // Updated parameter name
+        serverSelectionTimeoutMS: 5000,
+        socketTimeoutMS: 45000,
+      });
+      
+      console.log(`MongoDB Connected: ${conn.connection.host}`);
+      
+      // Connection events
+      mongoose.connection.on('connected', () => {
+        console.log('Mongoose connected to DB');
+      });
+
+      mongoose.connection.on('error', (err) => {
+        console.error(`Mongoose connection error: ${err}`);
+      });
+
+      mongoose.connection.on('disconnected', () => {
+        console.log('Mongoose disconnected');
+      });
+    },
+    {
+      retries: 5,
+      minTimeout: 1000,
+      maxTimeout: 5000,
+    }
+  );
 };
+
+// Close connection on app termination
+process.on('SIGINT', async () => {
+  await mongoose.connection.close();
+  process.exit(0);
+});
 
 module.exports = connectDB;

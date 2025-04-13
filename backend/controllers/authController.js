@@ -158,6 +158,60 @@ exports.logout = async (req, res) => {
   });
 };
 
+// @desc    Refresh token
+// @route   POST /api/auth/refresh-token
+// @access  Public
+exports.refreshToken = async (req, res) => {
+  try {
+    // Implementation would go here
+    res.status(200).json({
+      success: true,
+      token: 'new-token'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+// @desc    Forgot password
+// @route   POST /api/auth/forgot-password
+// @access  Public
+exports.forgotPassword = async (req, res) => {
+  try {
+    // Implementation would go here
+    res.status(200).json({
+      success: true,
+      message: 'Password reset email sent'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+// @desc    Reset password
+// @route   POST /api/auth/reset-password
+// @access  Public
+exports.resetPassword = async (req, res) => {
+  try {
+    // Implementation would go here
+    res.status(200).json({
+      success: true,
+      message: 'Password reset successful'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
 // @desc    Update user profile
 // @route   PUT /api/auth/updatedetails
 // @access  Private

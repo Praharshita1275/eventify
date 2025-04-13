@@ -2,30 +2,45 @@ const errorHandler = (err, req, res, next) => {
     let error = { ...err };
     error.message = err.message;
   
-    // Log to console for dev
-    console.log(err.stack);
+    // Enhanced error logging
+    console.error(`[${new Date().toISOString()}] Error:`, {
+      message: err.message,
+      stack: err.stack,
+      method: req.method,
+      path: req.path,
+      params: req.params,
+      query: req.query,
+      body: req.body,
+    });
   
-    // Mongoose bad ObjectId
-    if (err.name === 'CastError') {
-      const message = `Resource not found with id of ${err.value}`;
-      error = { message, status: 404 };
+    // Handle different error types
+    switch (true) {
+      case err.name === 'CastError':
+        error = { message: `Resource not found with id of ${err.value}`, status: 404 };
+        break;
+      case err.code === 11000:
+        error = { message: 'Duplicate field value entered', status: 400 };
+        break;
+      case err.name === 'ValidationError':
+        error = { message: Object.values(err.errors).map(val => val.message), status: 400 };
+        break;
+      case err.name === 'JsonWebTokenError':
+        error = { message: 'Invalid token', status: 401 };
+        break;
+      case err.name === 'TokenExpiredError':
+        error = { message: 'Token expired', status: 401 };
+        break;
+      case err.name === 'RateLimitError':
+        error = { message: 'Too many requests', status: 429 };
+        break;
+      default:
+        error.status = error.status || 500;
     }
   
-    // Mongoose duplicate key
-    if (err.code === 11000) {
-      const message = 'Duplicate field value entered';
-      error = { message, status: 400 };
-    }
-  
-    // Mongoose validation error
-    if (err.name === 'ValidationError') {
-      const message = Object.values(err.errors).map(val => val.message);
-      error = { message, status: 400 };
-    }
-  
-    res.status(error.status || 500).json({
+    res.status(error.status).json({
       success: false,
-      error: error.message || 'Server Error'
+      error: error.message || 'Server Error',
+      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
     });
   };
   

@@ -1,17 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const feedbackController = require('../controllers/feedbackController');
-const { authenticate } = require('../middleware/auth');
+const { protect } = require('../middleware/auth');
 const { checkRole } = require('../middleware/roleCheck');
 
+// Event feedback routes
+router.post('/event/:eventId', protect, feedbackController.createFeedback);
+router.get('/event/:eventId', protect, feedbackController.getEventFeedback);
+
 // User feedback routes
-router.post('/', authenticate, feedbackController.submitFeedback);
-router.get('/my-feedback', authenticate, feedbackController.getUserFeedback);
+router.get('/user', protect, feedbackController.getUserFeedback);
 
 // Admin routes
-router.get('/', authenticate, checkRole('admin'), feedbackController.getAllFeedback);
-router.get('/:id', authenticate, checkRole('admin'), feedbackController.getFeedbackById);
-router.put('/:id/status', authenticate, checkRole('admin'), feedbackController.updateFeedbackStatus);
-router.delete('/:id', authenticate, checkRole('admin'), feedbackController.deleteFeedback);
+router.get('/', protect, checkRole('admin'), feedbackController.getAllFeedback);
+router.put('/:id', protect, feedbackController.updateFeedback);
+router.delete('/:id', protect, feedbackController.deleteFeedback);
 
 module.exports = router;

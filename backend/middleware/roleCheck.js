@@ -1,3 +1,16 @@
+// Middleware to check user role
+exports.checkRole = (role) => {
+  return (req, res, next) => {
+    if (req.user.role !== role) {
+      return res.status(403).json({
+        success: false,
+        message: `User role ${req.user.role} is not authorized to access this route`
+      });
+    }
+    next();
+  };
+};
+
 // Middleware to check if user is an organizer of the event
 exports.isEventOrganizer = async (req, res, next) => {
     try {

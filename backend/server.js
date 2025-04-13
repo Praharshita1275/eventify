@@ -1,57 +1,77 @@
+const express = require('express');
 const mongoose = require('mongoose');
+const path = require('path');
+const cors = require('cors');
+const helmet = require('helmet');
+const hpp = require('hpp');
+const xss = require('xss-clean');
+const mongoSanitize = require('express-mongo-sanitize');
+const cookieParser = require('cookie-parser');
+const morgan = require('morgan');
+const connectDB = require('./config/db');
+const errorHandler = require('./middleware/errorHandler');
 
-const eventSchema = new mongoose.Schema({
-  title: {
-    type: String,
-    required: [true, 'Please provide an event title'],
-    trim: true,
-    maxlength: [100, 'Event title cannot exceed 100 characters']
-  },
-  description: {
-    type: String,
-    required: [true, 'Please provide an event description'],
-  },
-  date: {
-    type: Date,
-    required: [true, 'Please provide an event date']
-  },
-  time: {
-    type: String,
-    required: [true, 'Please provide an event time']
-  },
-  location: {
-    type: String,
-    required: [true, 'Please provide an event location']
-  },
-  category: {
-    type: String,
-    required: [true, 'Please provide an event category'],
-    enum: ['conference', 'workshop', 'seminar', 'networking', 'other']
-  },
-  organizer: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
-  attendees: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
-  }],
-  maxAttendees: {
-    type: Number,
-    default: 100
-  },
-  image: {
-    type: String,
-    default: 'default-event.jpg'
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  }
+// Load env vars
+require('dotenv').config();
+
+// Connect to database
+connectDB();
+
+// Create Express app
+const app = express();
+
+// Body parser
+app.use(express.json({ limit: '10kb' }));
+
+// Cookie parser
+app.use(cookieParser());
+
+// Dev logging middleware
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+}
+
+// Sanitize data
+app.use(mongoSanitize());
+
+// Set security headers
+app.use(helmet());
+
+// Prevent XSS attacks
+app.use(xss());
+
+// Prevent http param pollution
+app.use(hpp());
+
+// Enable CORS
+app.use(cors());
+
+// Mount routers
+app.use('/api/v1/auth', require('./routes/auth'));
+app.use('/api/v1/events', require('./routes/events'));
+app.use('/api/v1/users', require('./routes/users'));
+app.use('/api/v1/resources', require('./routes/resources'));
+app.use('/api/v1/feedback', require('./routes/feedback'));
+
+// Error handling middleware
+app.use(errorHandler);
+
+// Serve static assets in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../frontend/build')));
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, '../frontend/build', 'index.html'));
+  });
+}
+
+const PORT = process.env.PORT || 5000;
+
+const server = app.listen(PORT, () => {
+  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
 });
 
-// Index for text search
-eventSchema.index({ title: 'text', description: 'text' });
-
-module.exports = mongoose.model('Event', eventSchema);
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (err, promise) => {
+  console.error(`Error: ${err.message}`);
+  server.close(() => process.exit(1));
+});
