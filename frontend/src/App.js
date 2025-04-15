@@ -8,6 +8,8 @@ import Resources from "./components/Resources";
 import About from "./components/About";
 import Feedback from "./components/Feedback";  // ✅ Added Feedback page
 import Footer from "./components/Footer";
+import DiscussionForum from "./components/DiscussionForum";
+import Analytics from "./components/Analytics";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -25,6 +27,8 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/events" element={<Events />} />
         <Route path="/resources" element={<Resources />} />
+        <Route path="/forum" element={<DiscussionForum />} />
+        <Route path="/analytics" element={<Analytics />} />
         <Route path="/feedback" element={<Feedback />} />  {/* ✅ Feedback Route */}
       </Routes>
       {isAuthenticated && <Footer />}  {/* ✅ Show Footer only after login */}
