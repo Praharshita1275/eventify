@@ -69,47 +69,49 @@ const clubCategories = [
 
 function About() {
   return (
-    <section className="py-20 px-6 md:px-10 bg-gradient-to-b from-blue-100 via-white to-white text-center">
-      <h2 className="text-4xl font-bold text-primary mb-4">About Eventify</h2>
-      <p className="text-gray-600 text-lg">
-        Eventify is a club management platform designed to streamline event organization, resource booking, and communication. 
-        It simplifies managing college events by providing an intuitive interface for organizers and attendees alike.
-      </p>
+    <>
+      <section className="py-20 px-6 md:px-10 bg-gradient-to-b from-blue-100 via-white to-white text-center">
+        <h2 className="text-4xl font-bold text-primary mb-4">About Eventify</h2>
+        <p className="text-gray-600 text-lg">
+          Eventify is a club management platform designed to streamline event organization, resource booking, and communication. 
+          It simplifies managing college events by providing an intuitive interface for organizers and attendees alike.
+        </p>
 
-      <br />
-      <h2 className="text-4xl font-bold text-primary mb-8">Our College Clubs</h2>
+        <br />
+        <h2 className="text-4xl font-bold text-primary mb-8">Our College Clubs</h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-        {clubCategories.map((category, index) => (
-          <div 
-            key={index} 
-            className="bg-gray-100 shadow-lg rounded-lg p-6 hover:shadow-2xl transition-all duration-300"
-          >
-            <img 
-              src={category.image} 
-              alt={`${category.category}`} 
-              className="w-full h-48 object-cover rounded-lg mb-4"
-            />
-            <h3 className="text-2xl font-semibold text-primary mb-4">{category.category}</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {clubCategories.map((category, index) => (
+            <div 
+              key={index} 
+              className="bg-gray-100 shadow-lg rounded-lg p-6 hover:shadow-2xl transition-all duration-300"
+            >
+              <img 
+                src={category.image} 
+                alt={`${category.category}`} 
+                className="w-full h-48 object-cover rounded-lg mb-4"
+              />
+              <h3 className="text-2xl font-semibold text-primary mb-4">{category.category}</h3>
 
-            <ul className="text-left list-disc list-inside">
-              {category.clubs.map((club, idx) => (
-                <li key={idx} className="mb-2 text-gray-700">
-                  <a 
-                    href={club.instagram} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-blue-500 hover:underline"
-                  >
-                    {club.name}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
-    </section>
+              <ul className="text-left list-disc list-inside">
+                {category.clubs.map((club, idx) => (
+                  <li key={idx} className="mb-2 text-gray-700">
+                    <a 
+                      href={club.instagram} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-500 hover:underline"
+                    >
+                      {club.name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </section>
+    </>
   );
 }
 

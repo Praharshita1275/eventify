@@ -1,13 +1,33 @@
 import React, { useState } from "react";
+import axios from "axios";
 
-const Login = () => {
+const authorizedRoles = [
+  "Club Head",
+  "Director of Student Affairs",
+  "Director of IQAC",
+  "CDC",
+  "AEC"
+];
+
+const Login = ({ onLoginSuccess }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login Details:", { email, password });
-    // Add authentication logic here
+    setError("");
+    try {
+      const response = await axios.post("/api/auth/login", { email, password });
+      const user = response.data.user;
+      if (!authorizedRoles.includes(user.role)) {
+        setError("You are not authorized to log in.");
+        return;
+      }
+      onLoginSuccess(user, response.data.token);
+    } catch (err) {
+      setError(err.response?.data?.message || "Login failed");
+    }
   };
 
   return (
@@ -19,6 +39,7 @@ const Login = () => {
         <p className="text-center text-gray-500 mb-6">
           Login to continue managing events
         </p>
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label
@@ -81,4 +102,3 @@ const Login = () => {
 };
 
 export default Login;
-

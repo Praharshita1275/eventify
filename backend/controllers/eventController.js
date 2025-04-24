@@ -2,6 +2,111 @@ const Event = require('../models/Event');
 const User = require('../models/User');
 const Resource = require('../models/Resource');
 
+// @desc    Update event approval status
+// @route   PUT /api/events/:id/approval
+// @access  Private (Admin)
+exports.updateApprovalStatus = async (req, res) => {
+  try {
+    const { approvalStatus } = req.body;
+    const event = await Event.findById(req.params.id);
+
+    if (!event) {
+      return res.status(404).json({
+        success: false,
+        message: 'Event not found'
+      });
+    }
+
+    event.approvalStatus = approvalStatus;
+    await event.save();
+
+    res.status(200).json({
+      success: true,
+      data: event
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+// @desc    Generate circular for event
+// @route   POST /api/events/:id/circular
+// @access  Private (Principal)
+exports.generateCircular = async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id);
+
+    if (!event) {
+      return res.status(404).json({
+        success: false,
+        message: 'Event not found'
+      });
+    }
+
+    // Generate circular text using event data
+    const circularText = `
+CHAITANYA BHARATHI INSTITUTE OF TECHNOLOGY
+
+NAME: ${event.title}
+DATE: ${event.date.toDateString()}
+TIME: ${event.time}
+VENUE: ${event.location}
+PREPARATION TIME (if any): ${req.body.preparationTime || 'N/A'}
+
+SIGN OF PRINCIPAL
+STATUS: GREEN
+    `;
+
+    event.circular = circularText;
+    await event.save();
+
+    res.status(200).json({
+      success: true,
+      circular: circularText
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+// @desc    Mark circular as sent and update calendar/events
+// @route   POST /api/events/:id/circular/send
+// @access  Private (Principal)
+exports.sendCircular = async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id);
+
+    if (!event) {
+      return res.status(404).json({
+        success: false,
+        message: 'Event not found'
+      });
+    }
+
+    event.circularSent = true;
+    event.approvalStatus = 'approved_by_principal';
+    await event.save();
+
+    // Here you can add logic to update calendar and events page if needed
+
+    res.status(200).json({
+      success: true,
+      data: event
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
 // @desc    Create new event
 // @route   POST /api/events
 // @access  Private (Admin, Coordinator)

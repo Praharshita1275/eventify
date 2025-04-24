@@ -45,6 +45,19 @@ const eventSchema = new mongoose.Schema({
     type: String,
     default: 'default-event.jpg'
   },
+  approvalStatus: {
+    type: String,
+    enum: ['pending', 'approved_by_head', 'approved_by_principal'],
+    default: 'pending'
+  },
+  circular: {
+    type: String,
+    default: ''
+  },
+  circularSent: {
+    type: Boolean,
+    default: false
+  },
   createdAt: {
     type: Date,
     default: Date.now

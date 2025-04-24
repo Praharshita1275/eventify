@@ -3,17 +3,35 @@
 const express = require('express');
 const router = express.Router();
 const Event = require('../models/Event');
+const { protect } = require('../middleware/auth');
+const { checkRole } = require('../middleware/roleCheck');
+const eventController = require('../controllers/eventController');
+
 
 // Get all events
-router.get('/', async (req, res) => {
-  try {
-    const events = await Event.find().sort({ date: 1 }).populate('organizer', 'name email');
-    res.json(events);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server Error' });
-  }
-});
+router.get('/', eventController.getEvents);
+
+// Get event by ID
+router.get('/:id', eventController.getEvent);
+
+// Create new event
+router.post('/', protect, checkRole('admin'), eventController.createEvent);
+
+// Update event
+router.put('/:id', protect, eventController.updateEvent);
+
+// Delete event
+router.delete('/:id', protect, eventController.deleteEvent);
+
+// Update event approval status (only authorized roles)
+router.put('/:id/approval', protect, checkRole('admin'), eventController.updateApprovalStatus);
+
+// Generate circular for event (only principal)
+router.post('/:id/circular', protect, checkRole('principal'), eventController.generateCircular);
+
+// Mark circular as sent and update calendar/events (only principal)
+router.post('/:id/circular/send', protect, checkRole('principal'), eventController.sendCircular);
+
 
 // Get event by ID
 router.get('/:id', async (req, res) => {
