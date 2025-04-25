@@ -1,166 +1,136 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { PREDEFINED_CREDENTIALS } from '../config/roles';
 
-function Auth({ onRegister, onLogin }) {
-  const [isLogin, setIsLogin] = useState(false);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-const [passwordError, setPasswordError] = useState("");
-const [role, setRole] = useState("member"); // Default role matching backend
+function Auth({ onLogin }) {
   const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Toggle between Login and Register mode
-  const toggleAuthMode = () => {
-    setIsLogin(!isLogin);
-    setName("");
-    setEmail("");
-    setPassword("");
-    setPasswordError("");
-  };
-
-  // Password validation function
-  const validatePassword = (password) => {
-    const minLength = /.{8,}/;
-    const uppercase = /[A-Z]/;
-    const lowercase = /[a-z]/;
-    const number = /[0-9]/;
-    const specialChar = /[!@#$%^&*(),.?":{}|<>]/;
-
-    if (!minLength.test(password)) return "Password must be at least 8 characters.";
-    if (!uppercase.test(password)) return "Password must include at least one uppercase letter.";
-    if (!lowercase.test(password)) return "Password must include at least one lowercase letter.";
-    if (!number.test(password)) return "Password must include at least one number.";
-    if (!specialChar.test(password)) return "Password must include at least one special character.";
-
-    return ""; // Valid password
-  };
-
-  // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!isLogin) {
-      // Validate password during registration
-      const error = validatePassword(password);
-      if (error) {
-        setPasswordError(error);
-        return;
+    setError('');
+    setIsLoading(true);
+
+    try {
+      // Check if the email exists in predefined credentials
+      if (PREDEFINED_CREDENTIALS[email]) {
+        const credentials = PREDEFINED_CREDENTIALS[email];
+        
+        if (credentials.password === password) {
+          const userData = {
+            email,
+            role: credentials.role
+          };
+
+          // Call the onLogin callback with user data
+          onLogin(userData);
+          
+          // Redirect to home page
+          navigate('/home');
+        } else {
+          setError('Invalid password');
+        }
+      } else {
+        setError('Invalid email or unauthorized access');
       }
-
-              console.log("Registering:", { name, email, password, role });
-              if (onRegister) onRegister({ name, email, password, role });
-
-      setIsLogin(true);
-      setName(""); 
-    } else {
-      console.log("Logging in:", { email, password });
-      if (onLogin) onLogin({ email, password });
-
-      navigate("/about");
+    } catch (error) {
+      setError('An error occurred during login. Please try again.');
+      console.error('Login error:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Disable button if fields are empty or password is invalid
-  const isFormValid = isLogin ? email && password : name && email && password && !passwordError;
-
   return (
-    <div className="flex justify-center items-center h-screen bg-gradient-to-b from-green-50 to-blue-100">
-      <div className="w-full max-w-md bg-gray-100 p-8 rounded-2xl shadow-lg border border-green-200 transform transition duration-300 hover:scale-105">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 space-y-8">
+        <div>
+          <h2 className="text-3xl font-bold text-center text-gray-900">Welcome Back!</h2>
+          <p className="mt-2 text-center text-gray-600">Sign in to manage events and resources</p>
+        </div>
         
-        {/* Header Section */}
-        <h2 className="text-3xl font-extrabold text-center text-indigo-700 mb-4">
-          {isLogin ? "Welcome Back!" : "Join Eventify Today"}
-        </h2>
-        <p className="text-center text-gray-500 mb-6">
-          {isLogin ? "Login to continue" : "Create an account to get started"}
-        </p>
-
-        {/* Form */}
-        <form onSubmit={handleSubmit}>
-          {!isLogin && (
-            <div className="mb-4">
-              <label className="block text-gray-700 font-semibold mb-2">Name</label>
-              <input
-                type="text"
-                placeholder="Your Name"
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
+        {error && (
+          <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm text-red-700">{error}</p>
+              </div>
             </div>
-          )}
+          </div>
+        )}
 
-          <div className="mb-4">
-            <label className="block text-gray-700 font-semibold mb-2">Email</label>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Email
+            </label>
             <input
               type="email"
-              placeholder="Email Address"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               required
+              placeholder="Enter your email"
+              disabled={isLoading}
             />
           </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-700 font-semibold mb-2">Password</label>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Password
+            </label>
             <input
               type="password"
-              placeholder="Enter your password"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
               value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                if (!isLogin) setPasswordError(validatePassword(e.target.value));
-              }}
+              onChange={(e) => setPassword(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               required
+              placeholder="Enter your password"
+              disabled={isLoading}
             />
-            {/* Display password error */}
-            {passwordError && <p className="text-red-500 text-sm mt-1">{passwordError}</p>}
           </div>
 
-          {!isLogin && (
-            <div className="mb-4">
-              <label className="block text-gray-700 font-semibold mb-2">Role</label>
-              <select
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                required
-              >
-                <option value="member">Member</option>
-                <option value="coordinator">Coordinator</option>
-                <option value="admin">Admin</option>
-              </select>
-            </div>
-          )}
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={!isFormValid}
-            className={`w-full text-white font-semibold py-3 rounded-lg transition duration-300 transform hover:scale-105 ${
-              isFormValid
-                ? "bg-gradient-to-r from-indigo-500 to-purple-600 hover:opacity-90"
-                : "bg-gray-400 cursor-not-allowed"
-            }`}
-          >
-            {isLogin ? "Login" : "Register"}
-          </button>
+          <div>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
+                isLoading ? 'opacity-75 cursor-not-allowed' : ''
+              }`}
+            >
+              {isLoading ? (
+                <div className="flex items-center">
+                  <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white mr-2"></div>
+                  Signing in...
+                </div>
+              ) : (
+                'Sign In'
+              )}
+            </button>
+          </div>
         </form>
 
-        {/* Toggle between Login and Register */}
-        <p className="text-center mt-6 text-gray-600">
-          {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
-          <span
-            className="text-indigo-600 font-bold cursor-pointer transition hover:underline"
-            onClick={toggleAuthMode}
-          >
-            {isLogin ? "Register" : "Login"}
-          </span>
-        </p>
+        <div className="mt-6">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">Note</span>
+            </div>
+          </div>
+          <p className="mt-2 text-center text-sm text-gray-600">
+            Only authorized personnel can log in. For students and visitors, you can view the content without logging in.
+          </p>
+        </div>
       </div>
     </div>
   );

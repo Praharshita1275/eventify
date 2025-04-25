@@ -1,167 +1,123 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { FaPlus, FaEdit, FaTrash, FaCalendar } from 'react-icons/fa';
+import { usePermissions } from '../hooks/usePermissions';
+import { useAuth } from '../contexts/AuthContext';
 
-const CalendarEventForm = () => {
-  const [selectedDate, setSelectedDate] = useState("");
-  const [eventTitle, setEventTitle] = useState("");
-  const [eventDescription, setEventDescription] = useState("");
-  const [eventClub, setEventClub] = useState("");
-  const [eventDuration, setEventDuration] = useState("");
-  const [eventVenue, setEventVenue] = useState("");
-  const [eventAdditionalInfo, setEventAdditionalInfo] = useState("");
+function Events() {
   const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+  const permissions = usePermissions();
 
-  const handleAddEvent = (e) => {
-    e.preventDefault();
-    if (
-      eventTitle &&
-      eventDescription &&
-      eventClub &&
-      eventDuration &&
-      eventVenue
-    ) {
-      const newEvent = {
-        id: Date.now(),
-        title: eventTitle,
-        description: eventDescription,
-        date: selectedDate,
-        club: eventClub,
-        duration: eventDuration,
-        venue: eventVenue,
-        additionalInfo: eventAdditionalInfo,
-        status: "pending", // initial status is red
-      };
-      setEvents((prev) => [...prev, newEvent]);
+  useEffect(() => {
+    fetchEvents();
+  }, []);
 
-      // Simulate approval steps
-      setTimeout(() => {
-        setEvents((prevEvents) =>
-          prevEvents.map((ev) =>
-            ev.id === newEvent.id ? { ...ev, status: "headApproved" } : ev
-          )
-        );
-
-        setTimeout(() => {
-          setEvents((prevEvents) =>
-            prevEvents.map((ev) =>
-              ev.id === newEvent.id ? { ...ev, status: "principalApproved" } : ev
-            )
-          );
-        }, 5000); // simulate principal approval
-      }, 5000); // simulate head approval
-
-      // Reset form
-      setEventTitle("");
-      setEventDescription("");
-      setEventClub("");
-      setEventDuration("");
-      setEventVenue("");
-      setEventAdditionalInfo("");
-    } else {
-      alert("Please fill in all required fields.");
+  const fetchEvents = async () => {
+    try {
+      const response = await fetch('/api/events');
+      const data = await response.json();
+      setEvents(data);
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const getStatusButton = (status) => {
-    switch (status) {
-      case "pending":
-        return <span className="px-3 py-1 bg-red-500 text-white rounded-xl text-xs">Pending</span>;
-      case "headApproved":
-        return <span className="px-3 py-1 bg-yellow-400 text-black rounded-xl text-xs">Waiting for Principal</span>;
-      case "principalApproved":
-        return <span className="px-3 py-1 bg-green-500 text-white rounded-xl text-xs">Circular Generated</span>;
-      default:
-        return null;
+  const handleDeleteEvent = async (eventId) => {
+    if (!window.confirm('Are you sure you want to delete this event?')) return;
+
+    try {
+      await fetch(`/api/events/${eventId}`, {
+        method: 'DELETE',
+      });
+      fetchEvents(); // Refresh the events list
+    } catch (error) {
+      console.error('Error deleting event:', error);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-100 p-8">
-      <div className="max-w-3xl mx-auto bg-white shadow-xl rounded-2xl p-6">
-        <h2 className="text-2xl font-bold mb-6 text-center text-purple-700">📅 Schedule a New Event</h2>
-        <form onSubmit={handleAddEvent} className="space-y-4">
-          <input
-            type="date"
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
-            className="w-full px-4 py-2 border rounded-lg"
-            required
-          />
-          <input
-            type="text"
-            value={eventTitle}
-            onChange={(e) => setEventTitle(e.target.value)}
-            placeholder="Event Title"
-            className="w-full px-4 py-2 border rounded-lg"
-            required
-          />
-          <textarea
-            value={eventDescription}
-            onChange={(e) => setEventDescription(e.target.value)}
-            placeholder="Event Description"
-            className="w-full px-4 py-2 border rounded-lg"
-            rows="3"
-            required
-          />
-          <input
-            type="text"
-            value={eventClub}
-            onChange={(e) => setEventClub(e.target.value)}
-            placeholder="Organizing Club"
-            className="w-full px-4 py-2 border rounded-lg"
-            required
-          />
-          <input
-            type="text"
-            value={eventDuration}
-            onChange={(e) => setEventDuration(e.target.value)}
-            placeholder="Duration (e.g. 2 hours)"
-            className="w-full px-4 py-2 border rounded-lg"
-            required
-          />
-          <input
-            type="text"
-            value={eventVenue}
-            onChange={(e) => setEventVenue(e.target.value)}
-            placeholder="Venue"
-            className="w-full px-4 py-2 border rounded-lg"
-            required
-          />
-          <textarea
-            value={eventAdditionalInfo}
-            onChange={(e) => setEventAdditionalInfo(e.target.value)}
-            placeholder="Additional Info (Optional)"
-            className="w-full px-4 py-2 border rounded-lg"
-            rows="2"
-          />
-          <button
-            type="submit"
-            className="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition duration-200"
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold text-gray-800">Events</h1>
+        {permissions.canCreateEvent() && (
+          <Link
+            to="/events/create"
+            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
-            Add Event
-          </button>
-        </form>
-
-        {/* Display Events */}
-        <div className="mt-10">
-          <h3 className="text-xl font-semibold text-gray-700 mb-4">🗓️ Upcoming Events</h3>
-          <ul className="space-y-4">
-            {events.map((event) => (
-              <li key={event.id} className="border p-4 rounded-lg bg-gray-50 shadow-sm">
-                <div className="flex justify-between items-center mb-2">
-                  <h4 className="text-lg font-bold">{event.title}</h4>
-                  {getStatusButton(event.status)}
-                </div>
-                <p className="text-sm text-gray-600">📍 {event.venue} | 🕒 {event.duration}</p>
-                <p className="text-sm text-gray-600">📝 {event.description}</p>
-                <p className="text-sm text-gray-500 mt-1">🎓 {event.club} | 📆 {event.date}</p>
-                {event.additionalInfo && <p className="text-sm text-gray-500">ℹ️ {event.additionalInfo}</p>}
-              </li>
-            ))}
-          </ul>
-        </div>
+            <FaPlus className="mr-2" />
+            Schedule New Event
+          </Link>
+        )}
       </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {events.map((event) => (
+          <div
+            key={event._id}
+            className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+          >
+            {event.image && (
+              <img
+                src={event.image}
+                alt={event.title}
+                className="w-full h-48 object-cover"
+              />
+            )}
+            <div className="p-4">
+              <h2 className="text-xl font-semibold text-gray-800 mb-2">{event.title}</h2>
+              <p className="text-gray-600 mb-4">{event.description}</p>
+              
+              <div className="flex items-center text-gray-500 mb-4">
+                <FaCalendar className="mr-2" />
+                <span>{new Date(event.date).toLocaleDateString()}</span>
+              </div>
+
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium text-blue-600">
+                  {event.venue}
+                </span>
+                
+                {(permissions.canEditEvent() || (permissions.checkPermission('edit_own_event') && event.createdBy === user?.email)) && (
+                  <div className="flex space-x-2">
+                    <Link
+                      to={`/events/edit/${event._id}`}
+                      className="p-2 text-blue-600 hover:text-blue-800 transition-colors"
+                    >
+                      <FaEdit />
+                    </Link>
+                    <button
+                      onClick={() => handleDeleteEvent(event._id)}
+                      className="p-2 text-red-600 hover:text-red-800 transition-colors"
+                    >
+                      <FaTrash />
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {events.length === 0 && (
+        <div className="text-center py-8">
+          <p className="text-gray-600">No events scheduled yet.</p>
+        </div>
+      )}
     </div>
   );
-};
+}
 
-export default CalendarEventForm;
+export default Events;

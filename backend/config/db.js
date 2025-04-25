@@ -1,39 +1,26 @@
 const mongoose = require('mongoose');
-const retry = require('async-retry');
-const config = require('./config');
+require('dotenv').config();
 
 const connectDB = async () => {
-  await retry(
-    async () => {
-      const conn = await mongoose.connect(config.mongoURI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        maxPoolSize: 10, // Updated parameter name
-        serverSelectionTimeoutMS: 5000,
-        socketTimeoutMS: 45000,
-      });
-      
-      console.log(`MongoDB Connected: ${conn.connection.host}`);
-      
-      // Connection events
-      mongoose.connection.on('connected', () => {
-        console.log('Mongoose connected to DB');
-      });
+  try {
+    console.log('MongoDB URI:', process.env.MONGO_URI);
+    const conn = await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
 
-      mongoose.connection.on('error', (err) => {
-        console.error(`Mongoose connection error: ${err}`);
-      });
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
 
-      mongoose.connection.on('disconnected', () => {
-        console.log('Mongoose disconnected');
-      });
-    },
-    {
-      retries: 5,
-      minTimeout: 1000,
-      maxTimeout: 5000,
-    }
-  );
+    // Test the connection by trying to create a document
+    const TestModel = mongoose.model('Test', new mongoose.Schema({ test: String }));
+    await TestModel.findOne();
+    console.log('Database operations are working correctly');
+
+    return conn;
+  } catch (error) {
+    console.error('MongoDB connection error:', error);
+    process.exit(1);
+  }
 };
 
 // Close connection on app termination

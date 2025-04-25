@@ -1,85 +1,125 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { FaPlus, FaEdit, FaTrash, FaDownload, FaFile } from 'react-icons/fa';
+import { usePermissions } from '../hooks/usePermissions';
+import { useAuth } from '../contexts/AuthContext';
 
 function Resources() {
-  const [resources, setResources] = useState([
-    { id: 1, name: "Projector", availability: "Available" },
-    { id: 2, name: "Sound System", availability: "In Use" },
-    { id: 3, name: "Conference Room", availability: "Available" },
-  ]);
-  const [resourceName, setResourceName] = useState('');
-  const [availability, setAvailability] = useState('Available');
+  const [resources, setResources] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+  const permissions = usePermissions();
 
-  // Handle adding a resource
-  const handleAddResource = (e) => {
-    e.preventDefault();
-    if (resourceName) {
-      const newResource = {
-        id: Date.now(),
-        name: resourceName,
-        availability,
-      };
-      setResources([...resources, newResource]);
-      setResourceName('');
-      setAvailability('Available');
-    } else {
-      alert("Please enter a resource name.");
+  useEffect(() => {
+    fetchResources();
+  }, []);
+
+  const fetchResources = async () => {
+    try {
+      const response = await fetch('/api/resources');
+      const data = await response.json();
+      setResources(data);
+    } catch (error) {
+      console.error('Error fetching resources:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Handle deleting a resource
-  const handleDeleteResource = (id) => {
-    const updatedResources = resources.filter((resource) => resource.id !== id);
-    setResources(updatedResources);
+  const handleDeleteResource = async (resourceId) => {
+    if (!window.confirm('Are you sure you want to delete this resource?')) return;
+
+    try {
+      await fetch(`/api/resources/${resourceId}`, {
+        method: 'DELETE',
+      });
+      fetchResources(); // Refresh the resources list
+    } catch (error) {
+      console.error('Error deleting resource:', error);
+    }
   };
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
   return (
-    <section className="py-20 px-6 md:px-10 bg-gradient-to-b from-blue-100 via-white to-white">
-      <h2 className="text-4xl font-bold text-primary text-center mb-10">Resource Management</h2>
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold text-gray-800">Resources</h1>
+        {permissions.canCreateResource() && (
+          <Link
+            to="/resources/create"
+            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <FaPlus className="mr-2" />
+            Add New Resource
+          </Link>
+        )}
+      </div>
 
-      {/* Add Resource Form */}
-      <form onSubmit={handleAddResource} className="mb-8 bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
-        <h3 className="text-2xl font-semibold mb-4">Add New Resource</h3>
-        <input 
-          type="text" 
-          placeholder="Resource Name" 
-          className="w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300 transition duration-300"
-          value={resourceName}
-          onChange={(e) => setResourceName(e.target.value)}
-        />
-        <select 
-          className="w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300 transition duration-300"
-          value={availability}
-          onChange={(e) => setAvailability(e.target.value)}
-        >
-          <option value="Available">Available</option>
-          <option value="In Use">In Use</option>
-        </select>
-        <button 
-          type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-300"
-        >
-          Add Resource
-        </button>
-      </form>
-
-      {/* Resource List */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {resources.map((resource) => (
-          <div key={resource.id} className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-all duration-300">
-            <h3 className="text-2xl font-semibold mb-2">{resource.name}</h3>
-            <p className={`text-lg font-semibold ${resource.availability === "Available" ? "text-green-500" : "text-red-500"}`}>
-              {resource.availability}
-            </p>
-            <button 
-              onClick={() => handleDeleteResource(resource.id)}
-              className="mt-4 bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition duration-300"
-            >
-              Delete
-            </button>
+          <div
+            key={resource._id}
+            className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+          >
+            <div className="p-4">
+              <div className="flex items-center mb-4">
+                <FaFile className="text-blue-600 text-xl mr-3" />
+                <h2 className="text-xl font-semibold text-gray-800">{resource.title}</h2>
+              </div>
+              
+              <p className="text-gray-600 mb-4">{resource.description}</p>
+
+              <div className="flex justify-between items-center">
+                <a
+                  href={resource.fileUrl}
+                  download
+                  className="flex items-center text-blue-600 hover:text-blue-800 transition-colors"
+                >
+                  <FaDownload className="mr-2" />
+                  Download
+                </a>
+
+                {(permissions.canEditResource() || (permissions.checkPermission('edit_own_resource') && resource.createdBy === user?.email)) && (
+                  <div className="flex space-x-2">
+                    <Link
+                      to={`/resources/edit/${resource._id}`}
+                      className="p-2 text-blue-600 hover:text-blue-800 transition-colors"
+                    >
+                      <FaEdit />
+                    </Link>
+                    <button
+                      onClick={() => handleDeleteResource(resource._id)}
+                      className="p-2 text-red-600 hover:text-red-800 transition-colors"
+                    >
+                      <FaTrash />
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-4 text-sm text-gray-500">
+                Added by: {resource.createdBy}
+                <br />
+                Date: {new Date(resource.createdAt).toLocaleDateString()}
+              </div>
+            </div>
           </div>
         ))}
       </div>
-    </section>
+
+      {resources.length === 0 && (
+        <div className="text-center py-8">
+          <p className="text-gray-600">No resources available yet.</p>
+        </div>
+      )}
+    </div>
   );
 }
 

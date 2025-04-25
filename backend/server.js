@@ -10,12 +10,18 @@ const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
+const dotenv = require('dotenv');
 
 // Load env vars
-require('dotenv').config();
+dotenv.config();
 
 // Connect to database
-connectDB();
+connectDB().then(() => {
+  console.log('Database connected successfully');
+}).catch(err => {
+  console.error('Database connection error:', err);
+  process.exit(1);
+});
 
 // Create Express app
 const app = express();
@@ -43,8 +49,13 @@ app.use(xss());
 // Prevent http param pollution
 app.use(hpp());
 
-// Enable CORS
-app.use(cors());
+// Enable CORS with specific options
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Mount routers
 app.use('/api/v1/auth', require('./routes/auth'));
@@ -52,6 +63,11 @@ app.use('/api/v1/events', require('./routes/events'));
 app.use('/api/v1/users', require('./routes/users'));
 app.use('/api/v1/resources', require('./routes/resources'));
 app.use('/api/v1/feedback', require('./routes/feedback'));
+
+// Test route
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'API is working' });
+});
 
 // Error handling middleware
 app.use(errorHandler);
