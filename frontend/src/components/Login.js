@@ -1,162 +1,167 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FaEnvelope, FaLock, FaExclamationTriangle, FaCalendarAlt } from 'react-icons/fa';
+import api from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
 
-const authorizedRoles = [
-  "Club Head",
-  "Director of Student Affairs",
-  "Director of IQAC",
-  "CDC",
-  "AEC"
-];
-
-// Create axios instance with base URL and configuration
-const api = axios.create({
-  baseURL: 'http://localhost:5000/api/v1',
-  withCredentials: true,
-  headers: {
-    'Content-Type': 'application/json'
-  }
-});
-
-const Login = ({ onLoginSuccess }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+function Login() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-
-  // Test backend connection
-  useEffect(() => {
-    const testConnection = async () => {
-      try {
-        const response = await api.get('/test');
-        console.log('Backend connection test:', response.data);
-      } catch (err) {
-        console.error('Backend connection test failed:', err);
-      }
-    };
-    testConnection();
-  }, []);
-
-  useEffect(() => {
-    // Create IQAC Director account if it doesn't exist
-    const createIQACAccount = async () => {
-      try {
-        console.log("Attempting to create IQAC account...");
-        const response = await api.post("/auth/register", {
-          username: "IQAC Director",
-          email: "iqac@cbit.ac.in",
-          password: "iqac123456",
-          role: "Director of IQAC",
-          college: "CBIT",
-          department: "IQAC"
-        });
-        console.log("IQAC account created successfully:", response.data);
-      } catch (err) {
-        console.log("Registration attempt response:", err.response?.data);
-        if (!err.response?.data?.message?.includes("already exists")) {
-          console.error("Error creating IQAC account:", err.response?.data || err.message);
-        }
-      }
-    };
-    createIQACAccount();
-  }, []);
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setError('');
     setIsLoading(true);
     
     try {
-      console.log("Attempting login with:", { email });
-      const response = await api.post("/auth/login", { email, password });
-      console.log("Login response:", response.data);
+      const response = await api.post('/auth/login', {
+        email,
+        password
+      });
       
-      const user = response.data.user;
-      console.log("User role:", user.role);
-      console.log("Authorized roles:", authorizedRoles);
-      
-      if (!authorizedRoles.includes(user.role)) {
-        console.log("Role not authorized:", user.role);
-        setError("You are not authorized to log in.");
-        return;
+      if (response.data.success) {
+        // Use the login function from context
+        login(response.data.user, response.data.token);
+        navigate('/home');
       }
-      
-      console.log("Login successful, calling onLoginSuccess");
-      onLoginSuccess(user, response.data.token);
-    } catch (err) {
-      console.error("Login error full:", err);
-      console.error("Login error response:", err.response?.data);
-      if (err.response?.status === 404) {
-        setError("Server not found. Please check if the backend is running.");
-      } else {
-        setError(err.response?.data?.message || "Login failed. Please check your credentials and try again.");
-      }
+    } catch (error) {
+      setError(error.response?.data?.message || 'Failed to login');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-500 to-purple-600 p-4">
-      <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-2xl">
-        <h2 className="text-3xl font-extrabold mb-6 text-center text-gray-800">
-          Welcome Back!
-        </h2>
-        <p className="text-center text-gray-500 mb-6">
-          Sign in to manage events and resources
-        </p>
-        {error && (
-          <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4">
-            <p className="text-red-700">{error}</p>
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-white to-indigo-50">
+      {/* Left side decorative pattern */}
+      <div className="fixed left-0 top-0 h-full w-1/3 bg-gradient-to-br from-[#1a365d] to-[#2b6cb0] opacity-10 clip-pattern" />
+      
+      <div className="w-full max-w-md">
+        {/* Logo and Title Section */}
+        <div className="text-center mb-8">
+          <div className="inline-block p-4 rounded-full bg-gradient-to-br from-[#1a365d] to-[#2b6cb0] text-white mb-4 shadow-lg">
+            <FaCalendarAlt className="w-8 h-8" />
           </div>
-        )}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              placeholder="Enter your email"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+          <h2 className="text-4xl font-extrabold text-[#1a365d] tracking-tight mb-2">
+            Welcome to Eventify
+          </h2>
+          <p className="text-gray-600 text-lg">
+            Sign in to manage and participate in events
+          </p>
+        </div>
+
+        {/* Main Card */}
+        <div className="bg-white rounded-2xl shadow-2xl p-8 backdrop-blur-sm backdrop-filter relative overflow-hidden">
+          {/* Decorative circles */}
+          <div className="absolute -top-10 -right-10 w-40 h-40 bg-gradient-to-br from-[#1a365d] to-[#2b6cb0] rounded-full opacity-5" />
+          <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-gradient-to-br from-[#1a365d] to-[#2b6cb0] rounded-full opacity-5" />
+
+          {/* Error Message */}
+          {error && (
+            <div className="bg-amber-50 border-l-4 border-amber-500 p-4 mb-6 rounded-lg animate-fadeIn">
+              <div className="flex">
+                <FaExclamationTriangle className="text-amber-500 mt-0.5 mr-3 h-5 w-5" />
+                <p className="text-sm text-amber-700">{error}</p>
+              </div>
+            </div>
+          )}
+
+          {/* Login Form */}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+                Email Address
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <FaEnvelope className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  type="email"
+                  id="email"
+                  placeholder="Enter your email"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1a365d] focus:border-transparent transition-all"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
+                Password
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <FaLock className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  type="password"
+                  id="password"
+                  placeholder="Enter your password"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1a365d] focus:border-transparent transition-all"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className="w-full py-3 px-4 bg-[linear-gradient(135deg,#1a365d_0%,#2b6cb0_100%)] text-white rounded-xl hover:opacity-90 focus:opacity-90 active:opacity-80 transition-all font-semibold shadow-lg transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <div className="flex items-center justify-center">
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                  Signing In...
+                </div>
+              ) : (
+                'Sign In'
+              )}
+            </button>
+          </form>
+
+          {/* Test Credentials */}
+          <div className="mt-8 p-4 bg-indigo-50 rounded-xl border border-indigo-100">
+            <p className="text-[#1a365d] font-semibold mb-2 text-center">Test Credentials</p>
+            <div className="font-mono text-sm text-gray-600 space-y-1">
+              <p className="flex items-center justify-between">
+                <span>Email:</span>
+                <span className="text-[#2b6cb0]">aec@cbit.ac.in</span>
+              </p>
+              <p className="flex items-center justify-between">
+                <span>Password:</span>
+                <span className="text-[#2b6cb0]">aec123456</span>
+              </p>
+            </div>
           </div>
-          <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              placeholder="Enter your password"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={isLoading}
-            className={`w-full bg-blue-600 text-white font-semibold py-3 rounded-lg transition duration-300 ${
-              isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-blue-700'
-            }`}
-          >
-            {isLoading ? 'Signing in...' : 'Sign In'}
-          </button>
-        </form>
-        <div className="mt-6 text-center text-sm text-gray-600">
-          <p className="font-semibold mb-2">Test Credentials:</p>
-          <p className="font-mono">Email: iqac@cbit.ac.in</p>
-          <p className="font-mono">Password: iqac123456</p>
         </div>
       </div>
     </div>
   );
-};
+}
+
+// Add this to your CSS/Tailwind
+const styles = `
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.clip-pattern {
+  clip-path: polygon(0 0, 100% 0, 70% 100%, 0% 100%);
+}
+`;
 
 export default Login;

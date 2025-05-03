@@ -283,11 +283,11 @@ function About() {
   const [selectedCategory, setSelectedCategory] = useState("all");
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 py-16">
+    <div className="min-h-screen py-16 bg-gradient-to-br from-white to-indigo-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Hero Section */}
         <div className="text-center mb-16">
-          <h1 className="text-5xl font-bold text-gray-900 mb-6">
+          <h1 className="text-5xl font-bold text-[#1a365d] mb-6">
             CBIT Club Life
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
@@ -299,71 +299,37 @@ function About() {
         <div className="flex flex-wrap justify-center gap-6 mb-16">
           <button
             onClick={() => setSelectedCategory("all")}
-            className={`flex items-center px-8 py-3 rounded-full transition-all duration-300 ${
-              selectedCategory === "all"
-                ? "bg-blue-600 text-white"
-                : "bg-white"
-            } shadow-lg hover:shadow-xl min-w-[160px]`}
+            className={`flex items-center px-8 py-3 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl min-w-[160px] bg-white hover:bg-[linear-gradient(135deg,_#1a365d_0%,_#2b6cb0_100%)] hover:text-white ${selectedCategory === "all" ? "bg-[linear-gradient(135deg,_#1a365d_0%,_#2b6cb0_100%)] text-white" : "text-[#1a365d]"}`}
           >
-            <span className={`text-lg font-medium ${selectedCategory === "all" ? "text-white" : "text-blue-600"}`}>
-              All Clubs
-            </span>
+            <span className="text-lg font-medium">All Clubs</span>
           </button>
-
           <button
             onClick={() => setSelectedCategory("Cultural Clubs")}
-            className={`flex items-center gap-2 px-8 py-3 rounded-full transition-all duration-300 ${
-              selectedCategory === "Cultural Clubs"
-                ? "bg-purple-600 text-white"
-                : "bg-white"
-            } shadow-lg hover:shadow-xl min-w-[200px]`}
+            className={`flex items-center gap-2 px-8 py-3 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl min-w-[200px] bg-white hover:bg-[linear-gradient(135deg,_#1a365d_0%,_#2b6cb0_100%)] hover:text-white ${selectedCategory === "Cultural Clubs" ? "bg-[linear-gradient(135deg,_#1a365d_0%,_#2b6cb0_100%)] text-white" : "text-[#1a365d]"}`}
           >
-            <FaMusic className={`text-xl ${selectedCategory === "Cultural Clubs" ? "text-white" : "text-purple-600"}`} />
-            <span className={`text-lg font-medium ${selectedCategory === "Cultural Clubs" ? "text-white" : "text-purple-600"}`}>
-              Cultural Clubs
-            </span>
+            <FaMusic className="text-xl" />
+            <span className="text-lg font-medium">Cultural Clubs</span>
           </button>
-
           <button
             onClick={() => setSelectedCategory("Technical Clubs")}
-            className={`flex items-center gap-2 px-8 py-3 rounded-full transition-all duration-300 ${
-              selectedCategory === "Technical Clubs"
-                ? "bg-blue-600 text-white"
-                : "bg-white"
-            } shadow-lg hover:shadow-xl min-w-[200px]`}
+            className={`flex items-center gap-2 px-8 py-3 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl min-w-[200px] bg-white hover:bg-[linear-gradient(135deg,_#1a365d_0%,_#2b6cb0_100%)] hover:text-white ${selectedCategory === "Technical Clubs" ? "bg-[linear-gradient(135deg,_#1a365d_0%,_#2b6cb0_100%)] text-white" : "text-[#1a365d]"}`}
           >
-            <FaCode className={`text-xl ${selectedCategory === "Technical Clubs" ? "text-white" : "text-blue-600"}`} />
-            <span className={`text-lg font-medium ${selectedCategory === "Technical Clubs" ? "text-white" : "text-blue-600"}`}>
-              Technical Clubs
-            </span>
+            <FaCode className="text-xl" />
+            <span className="text-lg font-medium">Technical Clubs</span>
           </button>
-
           <button
             onClick={() => setSelectedCategory("Chaitanya Seva Clubs")}
-            className={`flex items-center gap-2 px-8 py-3 rounded-full transition-all duration-300 ${
-              selectedCategory === "Chaitanya Seva Clubs"
-                ? "bg-green-600 text-white"
-                : "bg-white"
-            } shadow-lg hover:shadow-xl min-w-[240px]`}
+            className={`flex items-center gap-2 px-8 py-3 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl min-w-[240px] bg-white hover:bg-[linear-gradient(135deg,_#1a365d_0%,_#2b6cb0_100%)] hover:text-white ${selectedCategory === "Chaitanya Seva Clubs" ? "bg-[linear-gradient(135deg,_#1a365d_0%,_#2b6cb0_100%)] text-white" : "text-[#1a365d]"}`}
           >
-            <FaHandsHelping className={`text-xl ${selectedCategory === "Chaitanya Seva Clubs" ? "text-white" : "text-green-600"}`} />
-            <span className={`text-lg font-medium ${selectedCategory === "Chaitanya Seva Clubs" ? "text-white" : "text-green-600"}`}>
-              Chaitanya Seva Clubs
-            </span>
+            <FaHandsHelping className="text-xl" />
+            <span className="text-lg font-medium">Chaitanya Seva Clubs</span>
           </button>
-
           <button
             onClick={() => setSelectedCategory("Sports Clubs")}
-            className={`flex items-center gap-2 px-8 py-3 rounded-full transition-all duration-300 ${
-              selectedCategory === "Sports Clubs"
-                ? "bg-red-600 text-white"
-                : "bg-white"
-            } shadow-lg hover:shadow-xl min-w-[180px]`}
+            className={`flex items-center gap-2 px-8 py-3 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl min-w-[180px] bg-white hover:bg-[linear-gradient(135deg,_#1a365d_0%,_#2b6cb0_100%)] hover:text-white ${selectedCategory === "Sports Clubs" ? "bg-[linear-gradient(135deg,_#1a365d_0%,_#2b6cb0_100%)] text-white" : "text-[#1a365d]"}`}
           >
-            <FaRunning className={`text-xl ${selectedCategory === "Sports Clubs" ? "text-white" : "text-red-600"}`} />
-            <span className={`text-lg font-medium ${selectedCategory === "Sports Clubs" ? "text-white" : "text-red-600"}`}>
-              Sports Clubs
-            </span>
+            <FaRunning className="text-xl" />
+            <span className="text-lg font-medium">Sports Clubs</span>
           </button>
         </div>
 
@@ -373,14 +339,12 @@ function About() {
             .filter(category => selectedCategory === "all" || selectedCategory === category.category)
             .map((category) => (
               <div key={category.id} className="animate-fade-in">
-                <div className="flex items-center mb-8 bg-white p-6 rounded-xl shadow-sm">
-                  <div className={`bg-${category.color}-100 p-4 rounded-xl mr-6`}>
-                    <span className={`text-${category.color}-600 text-2xl`}>
-                      {category.icon}
-                    </span>
+                <div className="flex items-center mb-8 bg-white p-6 rounded-xl shadow-lg">
+                  <div className="bg-indigo-100 p-4 rounded-xl mr-6">
+                    <span className="text-[#1a365d] text-2xl">{category.icon}</span>
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900">{category.category}</h2>
+                    <h2 className="text-2xl font-bold text-[#1a365d]">{category.category}</h2>
                     <p className="text-gray-500 mt-1 text-base">Explore amazing clubs</p>
                   </div>
                 </div>
@@ -388,10 +352,10 @@ function About() {
                   {category.clubs.map((club, index) => (
                     <div
                       key={index}
-                      className="bg-white rounded-xl shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md flex flex-col h-[320px]"
+                      className="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl flex flex-col h-[320px]"
                     >
                       <div className="p-6 flex-1 flex flex-col">
-                        <h3 className="text-xl font-bold text-gray-900 mb-4">
+                        <h3 className="text-xl font-bold text-[#1a365d] mb-4">
                           {club.name}
                         </h3>
                         <p className="text-gray-600 mb-6 text-base leading-relaxed flex-1">
@@ -402,7 +366,7 @@ function About() {
                             href={club.instagram}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-all duration-300 text-base font-medium"
+                            className="inline-flex items-center px-4 py-2 rounded-lg bg-[linear-gradient(135deg,_#1a365d_0%,_#2b6cb0_100%)] text-white hover:opacity-90 transition-all duration-300 text-base font-medium"
                           >
                             <FaInstagram className="mr-2" />
                             Follow on Instagram
@@ -410,7 +374,7 @@ function About() {
                           </a>
                         </div>
                       </div>
-                      <div className="h-1 w-full bg-blue-600"></div>
+                      <div className="h-1 w-full bg-[linear-gradient(135deg,_#1a365d_0%,_#2b6cb0_100%)]"></div>
                     </div>
                   ))}
                 </div>
@@ -419,11 +383,11 @@ function About() {
         </div>
 
         {/* Join Section */}
-        <div className="text-center mt-16 bg-white rounded-xl shadow-sm p-8">
-          <div className="inline-block p-3 rounded-xl bg-blue-100 text-blue-600 mb-6">
+        <div className="text-center mt-16 bg-white rounded-xl shadow-lg p-8">
+          <div className="inline-block p-3 rounded-xl bg-indigo-100 text-[#1a365d] mb-6">
             <FaHeart className="w-6 h-6" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+          <h2 className="text-2xl font-bold text-[#1a365d] mb-4">
             Find Your Community
           </h2>
           <p className="text-base text-gray-600 max-w-2xl mx-auto mb-8">
@@ -433,7 +397,7 @@ function About() {
             {clubCategories.map((category) => (
               <div
                 key={category.id}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white shadow-sm"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[linear-gradient(135deg,_#1a365d_0%,_#2b6cb0_100%)] text-white shadow-sm"
               >
                 <span className="text-xl">{category.icon}</span>
                 <span className="text-base font-medium">{category.clubs.length} clubs</span>

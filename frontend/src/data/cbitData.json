@@ -1,0 +1,96 @@
+{
+    "cultural_and_literary": {
+        "umbrella": "Chaitanya Samskruthi (CBCC)",
+        "clubs": {
+            "Chaitanya Lasya": {
+                "type": "Dance Club",
+                "activities": ["Organizes dance competitions", "Workshops", "Faculty performances during Shruthi"]
+            },
+            "Chaitanya Geethi": {
+                "type": "Singing Club",
+                "activities": ["Conducts singing competitions", "Karaoke sessions", "Music workshops"]
+            },
+            "Chaitanya Vaadhya": {
+                "type": "Instrumental Music Club",
+                "activities": ["Instrumental music performances", "Jam sessions"]
+            },
+            "Chaitanya Chaya": {
+                "type": "Photography & Film Club",
+                "activities": ["Photography exhibitions", "Film screenings", "Photo Hunt during Shruthi"]
+            },
+            "Chaitanya Srujana": {
+                "type": "Arts & Crafts Club",
+                "activities": ["Promotes painting and crafts", "Exhibitions", "Sales of handmade items"]
+            },
+            "Chaitanya Sahithi": {
+                "type": "Literature & Debate Club",
+                "sub_clubs": [
+                    "Geervana Bharathi",
+                    "Communicando",
+                    "Toastmasters",
+                    "Model United Nations (MUN)",
+                    "Transcendent"
+                ],
+                "activities": ["Literary discussions", "Debates", "Public speaking"]
+            },
+            "Chaitanya Kruthi": {
+                "type": "Writers & Poets Club",
+                "activities": ["Creative writing", "Poetry recitations", "Writing competitions"]
+            }
+        }
+    },
+    "social_service": {
+        "umbrella": "Chaitanya Seva",
+        "clubs": {
+            "NSS": {
+                "type": "National Service Scheme",
+                "activities": ["Community service", "Health camps", "Awareness programs"]
+            },
+            "Chaitanya Spandana": {
+                "type": "Social Outreach",
+                "activities": ["Clothing drives", "Educational support", "Upcycling campaigns"]
+            },
+            "EWB": {
+                "type": "Engineers Without Borders",
+                "activities": ["Engineering solutions for rural areas", "Sustainable development projects"]
+            },
+            "Technical Seva (Chaitanya Medha)": {
+                "type": "Technical Assistance Club",
+                "activities": ["Infrastructure help", "Tech for underserved communities"]
+            },
+            "Electoral Literacy Club": {
+                "type": "Voting Awareness",
+                "activities": ["Electoral education", "Mock elections", "Awareness campaigns"]
+            }
+        }
+    },
+    "lifestyle_and_personality": {
+        "umbrella": "Chaitanya Reethi",
+        "clubs": {
+            "Parivritha": {
+                "type": "Environmental Club",
+                "activities": ["Environmental awareness", "Tree plantations", "World Environment Day"]
+            },
+            "Chaitanya Oorja": {
+                "type": "Energy Awareness",
+                "activities": ["Energy conservation campaigns", "Renewable energy education"]
+            },
+            "Entrepreneurship Development Cell (Chaitanya Teja)": {
+                "type": "Entrepreneurship Cell",
+                "activities": ["Startup mentoring", "Workshops", "Pitch competitions"]
+            },
+            "Chaitanya Svaasthya": {
+                "type": "Wellness Club",
+                "activities": ["Mental and physical well-being programs", "Yoga", "Counseling"]
+            },
+            "Chaitanya Suraksha": {
+                "type": "Women Safety Club",
+                "activities": ["Self-defense training", "Women's rights awareness"]
+            },
+            "UHV Club": {
+                "type": "Universal Human Values",
+                "activities": ["Ethical living education", "Human values workshops"]
+            }
+        }
+    }
+}

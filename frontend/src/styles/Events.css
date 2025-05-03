@@ -1,0 +1,247 @@
+/* Event Card Styles */
+.event-card {
+  @apply bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300;
+  border: 1px solid #e5e7eb;
+}
+
+.event-card-image {
+  @apply w-full h-48 object-cover;
+}
+
+.event-card-content {
+  @apply p-5;
+}
+
+.event-card-title {
+  @apply text-xl font-semibold text-gray-800;
+}
+
+.event-card-meta {
+  @apply space-y-2 mb-4;
+}
+
+.event-card-meta-item {
+  @apply flex items-center text-gray-500;
+}
+
+.event-card-actions {
+  @apply flex justify-between items-center pt-2 border-t border-gray-100;
+}
+
+/* Notification Styles */
+.notification {
+  @apply p-4 mb-6 rounded-md flex items-start;
+}
+
+.notification-warning {
+  @apply bg-amber-50 border-l-4 border-amber-500;
+}
+
+.notification-info {
+  @apply bg-blue-50 border-l-4 border-blue-500;
+}
+
+.notification-error {
+  @apply bg-red-50 border-l-4 border-red-500;
+}
+
+/* Calendar Event Styles */
+.rbc-event {
+  @apply rounded-lg shadow-sm;
+}
+
+.rbc-event-content {
+  @apply p-1;
+}
+
+/* Toolbar Styles */
+.rbc-toolbar {
+  @apply flex flex-col sm:flex-row justify-between items-center gap-4 mb-6;
+}
+
+.rbc-toolbar-label {
+  @apply text-xl font-semibold text-gray-800;
+}
+
+.rbc-btn-group {
+  @apply flex gap-2;
+}
+
+.rbc-btn {
+  @apply px-4 py-2 rounded-lg transition-all;
+}
+
+.rbc-active {
+  @apply bg-white shadow-sm font-medium text-indigo-600;
+}
+
+/* Calendar View Styles */
+.rbc-calendar {
+  @apply bg-white rounded-lg shadow-md p-6 border border-gray-200;
+}
+
+.rbc-month-view,
+.rbc-time-view {
+  @apply border-gray-200;
+}
+
+.rbc-header {
+  @apply py-3 text-center font-medium text-gray-700;
+}
+
+.rbc-today {
+  @apply bg-indigo-50;
+}
+
+/* Event Details Modal */
+.event-details-modal {
+  @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50;
+}
+
+.event-details-content {
+  @apply bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto;
+}
+
+.event-details-header {
+  @apply p-6 border-b border-gray-200;
+}
+
+.event-details-body {
+  @apply p-6;
+}
+
+.event-details-footer {
+  @apply p-6 border-t border-gray-200 flex justify-end gap-4;
+}
+
+/* Form Styles */
+.form-group {
+  @apply mb-4;
+}
+
+.form-label {
+  @apply block text-sm font-medium text-gray-700 mb-1;
+}
+
+.form-input {
+  @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500;
+}
+
+.form-select {
+  @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500;
+}
+
+.form-textarea {
+  @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500;
+}
+
+/* Button Styles */
+.btn-primary {
+  @apply px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-500 text-white rounded-lg hover:from-indigo-700 hover:to-indigo-600 hover:text-white transition-all shadow-sm font-medium;
+}
+
+.btn-secondary {
+  @apply px-5 py-2.5 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-all shadow-sm font-medium;
+}
+
+.btn-danger {
+  @apply px-5 py-2.5 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-lg hover:from-red-700 hover:to-red-600 hover:text-white transition-all shadow-sm font-medium;
+}
+
+/* Status Badges */
+.status-badge {
+  @apply px-3 py-1 rounded-full text-sm font-medium;
+}
+
+.status-pending {
+  @apply bg-amber-100 text-amber-700;
+}
+
+.status-approved {
+  @apply bg-green-100 text-green-700;
+}
+
+.status-head-approved {
+  @apply bg-blue-100 text-blue-700;
+}
+
+.status-rejected {
+  @apply bg-red-100 text-red-700;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 640px) {
+  .rbc-toolbar {
+    @apply flex-col;
+  }
+  
+  .rbc-btn-group {
+    @apply w-full justify-center;
+  }
+  
+  .event-card-actions {
+    @apply flex-col gap-4;
+  }
+  
+  .event-details-content {
+    @apply mx-4;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.event-card {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Loading States */
+.loading-skeleton {
+  @apply animate-pulse bg-gray-200 rounded-lg;
+}
+
+/* Empty States */
+.empty-state {
+  @apply text-center py-12;
+}
+
+.empty-state-icon {
+  @apply text-gray-400 text-4xl mb-4;
+}
+
+.empty-state-text {
+  @apply text-gray-500;
+}
+
+/* Tooltips */
+.event-tooltip {
+  @apply absolute z-10 bg-white p-3 rounded-lg shadow-lg border border-gray-200 text-sm w-64 opacity-0 invisible transition-all duration-200;
+  transform: translateY(10px);
+}
+
+.group:hover .event-tooltip {
+  @apply opacity-100 visible;
+  transform: translateY(0);
+}
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+  @apply w-2;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded-full hover:bg-gray-400;
+} 

@@ -3,11 +3,12 @@ export const ROLES = {
   ADMIN: 'admin',
   FACULTY: 'faculty',
   STUDENT: 'student',
-  VISITOR: 'visitor'
+  VISITOR: 'visitor',
+  AEC: 'AEC'
 };
 
 // Define authorized roles that can access protected routes
-export const AUTHORIZED_ROLES = [ROLES.ADMIN, ROLES.FACULTY];
+export const AUTHORIZED_ROLES = [ROLES.ADMIN, ROLES.FACULTY, ROLES.AEC];
 
 // Role-based permissions
 export const PERMISSIONS = {
@@ -15,6 +16,7 @@ export const PERMISSIONS = {
     'create_event',
     'edit_event',
     'delete_event',
+    'approve_event',
     'create_resource',
     'edit_resource',
     'delete_resource',
@@ -25,6 +27,7 @@ export const PERMISSIONS = {
     'create_event',
     'edit_own_event',
     'delete_own_event',
+    'approve_event',
     'create_resource',
     'edit_own_resource',
     'delete_own_resource',
@@ -38,6 +41,17 @@ export const PERMISSIONS = {
   [ROLES.VISITOR]: [
     'view_events',
     'view_resources'
+  ],
+  [ROLES.AEC]: [
+    'create_event',
+    'edit_event',
+    'delete_event',
+    'approve_event',
+    'create_resource',
+    'edit_resource',
+    'delete_resource',
+    'manage_circular',
+    'view_analytics'
   ]
 };
 
@@ -54,6 +68,10 @@ export const PREDEFINED_CREDENTIALS = {
   'student@cbit.ac.in': {
     password: 'student123',
     role: ROLES.STUDENT
+  },
+  'aec@cbit.ac.in': {
+    password: 'aec123456',
+    role: ROLES.AEC
   }
 };
 

@@ -1,230 +1,60 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-import Navbar from "./components/Navbar";
-import Home from "./components/Home";
-import Auth from "./components/Auth";
-import Events from "./components/Events";
-import Resources from "./components/Resources";
-import About from "./components/About";
-import Feedback from "./components/Feedback";
-import Footer from "./components/Footer";
-import DiscussionForum from "./components/DiscussionForum";
-import Analytics from "./components/Analytics";
-import Circular from "./components/Circular";
-import ProtectedRoute from "./components/ProtectedRoute";
-import { AUTHORIZED_ROLES } from "./config/roles";
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
+import Layout from './components/layouts/Layout';
+import HomeLayout from './components/layouts/HomeLayout';
+import Home from './components/Home';
+import About from './components/About';
+import Events from './components/Events';
 import CreateEvent from './components/CreateEvent';
-import CreateResource from './components/CreateResource';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
-import LandingPage from './components/LandingPage';
+import EditEvent from './components/EditEvent';
+import Feedback from './components/Feedback';
+import Circulars from './components/Circulars';
+import Circular from './components/Circular';
+import Resources from './components/Resources';
+import Auth from './components/Auth';
+import PageTransition from './components/PageTransition';
+import { AuthProvider } from './contexts/AuthContext';
+import { PermissionsProvider } from './contexts/PermissionsContext';
+import './App.css';
 
-// Separate component for the main app content
-function AppContent() {
-  const [hasVisited, setHasVisited] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const { setUser, setIsAuthenticated } = useAuth();
-
-  useEffect(() => {
-    // Check for existing auth state on app load
-    const checkAuthState = () => {
-      const userRole = localStorage.getItem('userRole');
-      const userEmail = localStorage.getItem('userEmail');
-      const isAuth = localStorage.getItem('isAuthenticated');
-
-      if (isAuth && userRole && userEmail) {
-        setUser({ role: userRole, email: userEmail });
-        setIsAuthenticated(true);
-      }
-
-      const visited = localStorage.getItem('hasVisited');
-      if (visited) {
-        setHasVisited(true);
-      }
-      setIsLoading(false);
-    };
-
-    checkAuthState();
-  }, [setUser, setIsAuthenticated]);
-
-  useEffect(() => {
-    const handleStorageChange = () => {
-      const visited = localStorage.getItem('hasVisited');
-      setHasVisited(!!visited);
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
-
-  const handleLogin = (userData) => {
-    try {
-      // Set user data in context
-      setUser({ role: userData.role, email: userData.email });
-      setIsAuthenticated(true);
-
-      // Store in localStorage
-      localStorage.setItem('userRole', userData.role);
-      localStorage.setItem('userEmail', userData.email);
-      localStorage.setItem('isAuthenticated', 'true');
-
-      // You can add additional login success handling here
-      console.log('User logged in successfully:', userData.email);
-    } catch (error) {
-      console.error('Login error:', error);
-      // Handle any login errors here
-    }
-  };
-
-  const RequireVisited = ({ children }) => {
-    return hasVisited ? children : <Navigate to="/" />;
-  };
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
+function AnimatedRoutes() {
+  const location = useLocation();
 
   return (
-    <Router>
-      {hasVisited && <Navbar />}
-      <Routes>
-        <Route path="/" element={!hasVisited ? <LandingPage /> : <Navigate to="/home" />} />
-        <Route
-          path="/home"
-          element={
-            <RequireVisited>
-              <Home />
-            </RequireVisited>
-          }
-        />
-        <Route
-          path="/auth"
-          element={
-            <RequireVisited>
-              <Auth onLogin={handleLogin} />
-            </RequireVisited>
-          }
-        />
-        <Route
-          path="/about"
-          element={
-            <RequireVisited>
-              <About />
-            </RequireVisited>
-          }
-        />
-        <Route
-          path="/events"
-          element={
-            <RequireVisited>
-              <Events />
-            </RequireVisited>
-          }
-        />
-        <Route
-          path="/resources"
-          element={
-            <RequireVisited>
-              <Resources />
-            </RequireVisited>
-          }
-        />
-        
-        {/* Protected Routes - Only accessible by authorized roles */}
-        <Route
-          path="/forum"
-          element={
-            <RequireVisited>
-              <ProtectedRoute requiredRole={AUTHORIZED_ROLES}>
-                <DiscussionForum />
-              </ProtectedRoute>
-            </RequireVisited>
-          }
-        />
-        <Route
-          path="/analytics"
-          element={
-            <RequireVisited>
-              <ProtectedRoute requiredRole={AUTHORIZED_ROLES}>
-                <Analytics />
-              </ProtectedRoute>
-            </RequireVisited>
-          }
-        />
-        <Route
-          path="/feedback"
-          element={
-            <RequireVisited>
-              <ProtectedRoute requiredRole={AUTHORIZED_ROLES}>
-                <Feedback />
-              </ProtectedRoute>
-            </RequireVisited>
-          }
-        />
-        <Route
-          path="/circular"
-          element={
-            <RequireVisited>
-              <ProtectedRoute requiredRole={AUTHORIZED_ROLES}>
-                <Circular />
-              </ProtectedRoute>
-            </RequireVisited>
-          }
-        />
-        <Route
-          path="/events/create"
-          element={
-            <RequireVisited>
-              <ProtectedRoute>
-                <CreateEvent />
-              </ProtectedRoute>
-            </RequireVisited>
-          }
-        />
-        <Route
-          path="/events/edit/:id"
-          element={
-            <RequireVisited>
-              <ProtectedRoute>
-                <CreateEvent />
-              </ProtectedRoute>
-            </RequireVisited>
-          }
-        />
-        <Route
-          path="/resources/create"
-          element={
-            <RequireVisited>
-              <ProtectedRoute>
-                <CreateResource />
-              </ProtectedRoute>
-            </RequireVisited>
-          }
-        />
-        <Route
-          path="/resources/edit/:id"
-          element={
-            <RequireVisited>
-              <ProtectedRoute>
-                <CreateResource />
-              </ProtectedRoute>
-            </RequireVisited>
-          }
-        />
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        {/* Home route with no navbar */}
+        <Route element={<HomeLayout />}>
+          <Route path="/" element={<PageTransition><Home /></PageTransition>} />
+          <Route path="/home" element={<PageTransition><Home /></PageTransition>} />
+        </Route>
+
+        {/* Other routes with navbar */}
+        <Route element={<Layout />}>
+          <Route path="/about" element={<PageTransition><About /></PageTransition>} />
+          <Route path="/events" element={<PageTransition><Events /></PageTransition>} />
+          <Route path="/events/create" element={<PageTransition><CreateEvent /></PageTransition>} />
+          <Route path="/events/edit/:id" element={<PageTransition><EditEvent /></PageTransition>} />
+          <Route path="/feedback" element={<PageTransition><Feedback /></PageTransition>} />
+          <Route path="/circulars" element={<PageTransition><Circulars /></PageTransition>} />
+          <Route path="/circular/:eventId" element={<PageTransition><Circular /></PageTransition>} />
+          <Route path="/resources" element={<PageTransition><Resources /></PageTransition>} />
+          <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
+        </Route>
       </Routes>
-      {hasVisited && <Footer />}
-    </Router>
+    </AnimatePresence>
   );
 }
 
-// Main App component
 function App() {
   return (
     <AuthProvider>
-      <AppContent />
+      <PermissionsProvider>
+        <Router>
+          <AnimatedRoutes />
+        </Router>
+      </PermissionsProvider>
     </AuthProvider>
   );
 }

@@ -1,16 +1,25 @@
-/* Tailwind Base Imports */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
-
+/* Events.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 /* Custom Global Styles */
 :root {
-  --primary-color: #643acf;; /* Indigo */
-  --secondary-color: #4F46E5; /* Cyan */
-  --background-color: #F9FAFB; /* Light Gray */
-  --text-color: #1F2937; /* Dark Gray */
+  --primary-color: #4f46e5;
+  --primary-hover: #4338ca;
+  --secondary-color: #6366f1;
+  --background-color: #f8fafc;
+  --text-color: #1e293b;
+  --text-light: #64748b;
+  --border-color: #e2e8f0;
+  --success-color: #10b981;
+  --warning-color: #f59e0b;
+  --error-color: #ef4444;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --gradient-primary: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+  --gradient-success: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+  --gradient-error: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
 }
 
 /* Global Reset */
@@ -33,116 +42,550 @@ body {
 /* Scrollbar Styling */
 ::-webkit-scrollbar {
   width: 8px;
-  background-color: #E5E7EB;
+  background-color: var(--background-color);
 }
 
 ::-webkit-scrollbar-thumb {
   background-color: var(--primary-color);
   border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--primary-hover);
 }
 
 /* Button Styling */
 button {
   background-color: var(--primary-color);
-  color: rgb(66, 90, 209);
+  color: white;
   padding: 0.6rem 1.2rem;
   border: none;
-  border-radius: 0.375rem;
+  border-radius: 0.5rem;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-button:hover {
-  background-color: var(--secondary-color);
+button:hover, button:focus, button.active {
+  background: linear-gradient(135deg, #1a365d 0%, #2b6cb0 100%);
+  color: #fff;
 }
 
 /* Link Styling */
 a {
   color: var(--primary-color);
   text-decoration: none;
-  transition: color 0.2s;
+  transition: all 0.2s;
 }
 
 a:hover {
-  color: var(--secondary-color);
+  color: var(--primary-hover);
+  text-decoration: underline;
 }
 
 /* Headings */
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Poppins', sans-serif;
-  font-weight: bold;
+  font-weight: 600;
   margin-bottom: 0.5rem;
+  color: var(--text-color);
 }
 
 /* Container Utility */
 .container {
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 1rem;
+  padding: 1.5rem;
 }
 
-/* Center the calendar */
-.custom-calendar {
-  border: none;
-  border-radius: 15px;
-  padding: 20px;
-  max-width: 500px;
-  background-color: #c4d4e4; /* Light Gray Background */
-  margin: 0 auto;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+/* Calendar Specific Styles */
+.rbc-calendar {
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: var(--shadow-lg);
+  font-family: 'Poppins', sans-serif;
+  height: 100%;
+  min-height: 600px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
 }
 
-/* Weekday Header */
-.custom-calendar .react-calendar__month-view__weekdays__weekday {
-  font-weight: bold;
-  font-size: 1rem;
-  color: #1e3a8a; /* Tailwind Indigo-900 */
-  padding: 10px 0;
+/* Header Toolbar */
+.rbc-toolbar {
+  padding: 1.5rem;
+  margin-bottom: 0;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  background: white;
+  border-radius: 1rem 1rem 0 0;
 }
 
-/* Day Tiles */
-.custom-calendar .react-calendar__tile {
-  background: transparent;
-  color: #374151; /* Tailwind Gray-700 */
-  font-size: 1.2rem;
-  padding: 10px;
-  border-radius: 10px;
-  transition: all 0.2s ease-in-out;
-}
-
-/* Highlight Current Day */
-.custom-calendar .react-calendar__tile--now {
-  background: #2563eb; /* Tailwind Blue-600 */
+.rbc-toolbar button {
+  background: linear-gradient(135deg, #1a365d 0%, #2b6cb0 100%);
   color: white;
+  border: none;
+  padding: 0.625rem 1.25rem;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  margin: 0.25rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.rbc-toolbar button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.rbc-toolbar button.rbc-active {
+  background: linear-gradient(135deg, #1a365d 0%, #2b6cb0 100%);
+  color: white;
+  border: none;
+  box-shadow: var(--shadow-md);
+  ring: 2px;
+  ring-offset: 2px;
+  ring-color: #1a365d;
+}
+
+.rbc-toolbar-label {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-color);
+  padding: 0.5rem;
+}
+
+/* Month View */
+.rbc-month-view {
+  border: none;
+  background-color: white;
+  height: 100%;
+}
+
+.rbc-header {
+  padding: 1rem;
+  font-weight: 600;
+  color: var(--text-color);
+  border-bottom: 1px solid var(--border-color);
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+  letter-spacing: 0.05em;
+  background-color: var(--background-color);
+}
+
+.rbc-month-row {
+  border-color: var(--border-color);
+  min-height: 120px;
+}
+
+.rbc-date-cell {
+  padding: 0.75rem;
+  font-weight: 500;
+  color: var(--text-light);
+  text-align: right;
+}
+
+.rbc-date-cell.rbc-now {
+  color: var(--primary-color);
+  font-weight: 600;
+  background-color: rgba(79, 70, 229, 0.1);
+}
+
+/* Event Styles */
+.rbc-event {
+  border-radius: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  background: var(--gradient-primary);
+  border: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  box-shadow: var(--shadow-sm);
+}
+
+.rbc-event:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  z-index: 1;
+}
+
+.rbc-event-label {
+  font-size: 0.75rem;
+  display: none;
+}
+
+.rbc-event-content {
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.25rem;
+  color: white;
+}
+
+/* Today's Cell Highlight */
+.rbc-today {
+  background-color: rgba(79, 70, 229, 0.05);
+}
+
+/* Time Grid */
+.rbc-time-view {
+  border: none;
+  background-color: white;
+  height: 100%;
+}
+
+.rbc-time-header {
+  border-color: var(--border-color);
+  overflow: hidden;
+}
+
+.rbc-time-content {
+  border-color: var(--border-color);
+  overflow-y: auto;
+}
+
+.rbc-timeslot-group {
+  border-color: var(--border-color);
+  min-height: 60px;
+}
+
+/* Off-range Dates */
+.rbc-off-range-bg {
+  background-color: var(--background-color);
+}
+
+.rbc-off-range {
+  color: var(--text-light);
+}
+
+/* Row Height */
+.rbc-row-content {
+  z-index: 1;
+  position: relative;
+}
+
+/* Agenda View */
+.rbc-agenda-view table {
+  border: none;
+  width: 100%;
+}
+
+.rbc-agenda-view table thead {
+  background-color: var(--background-color);
+}
+
+.rbc-agenda-view table.rbc-agenda-table tbody > tr > td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* Event Status Colors */
+.event-pending {
+  background: var(--gradient-warning);
+}
+
+.event-head-approved {
+  background: var(--gradient-success);
+}
+
+.event-approved {
+  background: var(--gradient-primary);
+}
+
+/* Tooltip Styles */
+.event-tooltip {
+  position: absolute;
+  background-color: white;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow-lg);
+  z-index: 1000;
+  min-width: 250px;
+  max-width: 350px;
+  transform: translateY(-100%);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.event-tooltip::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 8px;
+  border-style: solid;
+  border-color: white transparent transparent transparent;
+}
+
+/* Selected Cell */
+.rbc-selected-cell {
+  background-color: rgba(79, 70, 229, 0.1);
+}
+
+/* Current Time Indicator */
+.rbc-current-time-indicator {
+  background-color: var(--primary-color);
+  height: 2px;
+}
+
+/* Responsive Styles */
+@media (max-width: 640px) {
+  .rbc-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .rbc-toolbar-label {
+    font-size: 1rem;
+    text-align: center;
+  }
+
+  .rbc-btn-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.25rem;
+  }
+
+  .rbc-btn-group button {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+}
+
+/* Loading Spinner */
+.loading-spinner {
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid rgba(79, 70, 229, 0.3);
   border-radius: 50%;
+  border-top-color: var(--primary-color);
+  animation: spin 1s ease-in-out infinite;
 }
 
-/* Highlight Selected Day */
-.custom-calendar .react-calendar__tile--active {
-  background: #e27878; /* Tailwind Amber-400 */
-  color: #1e293b; /* Tailwind Slate-800 */
-  border-radius: 50%;
-  font-weight: bold;
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-/* Weekend Days (Saturday & Sunday) */
-.custom-calendar .react-calendar__month-view__days__day--weekend {
-  color: #dc2626; /* Tailwind Red-600 */
+/* Notification Styles */
+.notification {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  animation: slideIn 0.3s ease-out;
 }
 
-/* Hover Effect on Tiles */
-.custom-calendar .react-calendar__tile:hover {
-  background-color: #dbeafe; /* Light Blue Hover */
-  color: #1e3a8a; /* Tailwind Indigo-900 */
-  transform: scale(1.1);
+.notification-info {
+  background-color: #eff6ff;
+  border-left: 4px solid #3b82f6;
+  color: #1e40af;
 }
 
-/* Disabled Dates */
-.custom-calendar .react-calendar__tile--disabled {
-  color: #9ca3af; /* Tailwind Gray-400 */
+.notification-warning {
+  background-color: #fffbeb;
+  border-left: 4px solid #f59e0b;
+  color: #92400e;
 }
 
-/* Border on Entire Calendar */
-.custom-calendar {
-  border: 2px solid #2563eb; /* Tailwind Blue-600 */
+.notification-error {
+  background-color: #fef2f2;
+  border-left: 4px solid #ef4444;
+  color: #991b1b;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Card Styles */
+.event-card {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.event-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.event-card-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.event-card:hover .event-card-image {
+  transform: scale(1.05);
+}
+
+.event-card-content {
+  padding: 1.5rem;
+}
+
+.event-card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 0.75rem;
+}
+
+.event-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.event-card-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-light);
+  font-size: 0.875rem;
+}
+
+.event-card-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+/* Form Styles */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-color);
+  margin-bottom: 0.5rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: all 0.2s;
+  background-color: white;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.form-textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: all 0.2s;
+  resize: vertical;
+  background-color: white;
+}
+
+.form-textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 50;
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: var(--shadow-lg);
+  max-width: 32rem;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: modalFadeIn 0.3s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Status Badge */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.status-badge-pending {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.status-badge-approved {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.status-badge-head-approved {
+  background-color: #dbeafe;
+  color: #1e40af;
 }

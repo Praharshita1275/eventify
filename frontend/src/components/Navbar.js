@@ -1,55 +1,58 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { FaHome, FaCalendarAlt, FaBook, FaInfoCircle, FaComments, FaChartBar, FaBullhorn, FaSignInAlt, FaSignOutAlt } from 'react-icons/fa';
+import { FaHome, FaCalendarAlt, FaUser, FaSignOutAlt, FaSignInAlt, FaBars, FaTimes, FaBook, FaCommentAlt } from 'react-icons/fa';
 import { useAuth } from '../contexts/AuthContext';
-import { usePermissions } from '../hooks/usePermissions';
+import './Navbar.css';
 
 function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
+  const { user, isAuthenticated, logout } = useAuth();
   const location = useLocation();
-  const { user, logout } = useAuth();
-  const permissions = usePermissions();
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
   const isActive = (path) => {
     return location.pathname === path;
   };
 
+  // Base navigation links for all users (logged in or not)
   const navLinks = [
-    { path: '/home', name: 'Home', icon: <FaHome /> },
-    { path: '/about', name: 'About', icon: <FaInfoCircle /> },
-    { path: '/events', name: 'Events', icon: <FaCalendarAlt /> },
-    { path: '/resources', name: 'Resources', icon: <FaBook /> }
+    { path: '/home', name: 'Home', icon: <FaHome className="text-white" /> },
+    { path: '/about', name: 'About', icon: <FaUser className="text-white" /> },
+    { path: '/events', name: 'Events', icon: <FaCalendarAlt className="text-white" /> },
+    { path: '/feedback', name: 'Feedback', icon: <FaCommentAlt className="text-white" /> }
   ];
 
-  // Add protected routes only for authorized users
-  if (user && permissions.canManageCircular()) {
-    navLinks.push(
-      { path: '/forum', name: 'Forum', icon: <FaComments /> },
-      { path: '/analytics', name: 'Analytics', icon: <FaChartBar /> },
-      { path: '/circular', name: 'Circular', icon: <FaBullhorn /> }
-    );
+  // Add Circulars link for all users
+  navLinks.push({ path: '/circulars', name: 'Circulars', icon: <FaBook className="text-white" /> });
+  
+  // Add Resources link only for authenticated users
+  if (isAuthenticated) {
+    navLinks.push({ path: '/resources', name: 'Resources', icon: <FaBook className="text-white" /> });
   }
+  
+  // Remove Forum and Analytics links
+  // if (user && permissions.canManageCircular()) {
+  //   navLinks.push(
+  //     { path: '/forum', name: 'Forum', icon: <FaComments /> },
+  //     { path: '/analytics', name: 'Analytics', icon: <FaChartBar /> }
+  //   );
+  // }
 
   return (
-    <nav className="bg-gradient-to-r from-blue-600 to-blue-400 shadow-md">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="flex justify-between items-center h-16">
+    <nav className="navbar">
+      <div className="navbar-container">
+        <div className="navbar-content">
           {/* Logo */}
-          <Link to="/" className="text-[28px] font-bold text-white">
-            Eventify
+          <Link to="/" className="navbar-logo flex items-center space-x-2">
+            <span className="hover:text-white hover:underline transition-all">Eventify</span>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center justify-center flex-1 space-x-8">
+          <div className="navbar-links">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
-                className={`${
-                  isActive(link.path)
-                    ? 'text-white bg-white/20 rounded-lg'
-                    : 'text-white/80 hover:text-white hover:bg-white/10 rounded-lg'
-                } flex items-center space-x-1 text-sm font-medium transition-colors duration-200 px-4 py-2`}
+                className={`navbar-link ${isActive(link.path) ? 'active' : ''}`}
               >
                 <span className="text-lg">{link.icon}</span>
                 <span>{link.name}</span>
@@ -61,60 +64,39 @@ function Navbar() {
             {user ? (
               <button
                 onClick={logout}
-                className="bg-white text-blue-600 px-6 py-2 rounded-lg text-sm font-medium hover:bg-blue-50 transition-colors duration-200 flex items-center space-x-2"
+                className="navbar-button bg-[linear-gradient(135deg,_#1a365d_0%,_#2b6cb0_100%)] text-white hover:bg-[linear-gradient(135deg,_#dc2626_0%,_#991b1b_100%)] transition-all"
               >
-                <FaSignOutAlt />
+                <FaSignOutAlt className="text-white" />
                 <span>Logout</span>
               </button>
             ) : (
               <Link
                 to="/auth"
-                className="bg-white text-blue-600 px-6 py-2 rounded-lg text-sm font-medium hover:bg-blue-50 transition-colors duration-200 flex items-center space-x-2"
+                className="navbar-button bg-[linear-gradient(135deg,_#1a365d_0%,_#2b6cb0_100%)] text-white hover:bg-[linear-gradient(135deg,_#059669_0%,_#065f46_100%)] transition-all"
               >
-                <FaSignInAlt />
+                <FaSignInAlt className="text-white" />
                 <span>Login</span>
               </Link>
             )}
           </div>
 
           {/* Mobile menu button */}
-          <div className="md:hidden">
             <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="text-white hover:text-blue-100 focus:outline-none"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="navbar-mobile-button bg-[linear-gradient(135deg,_#1a365d_0%,_#2b6cb0_100%)] text-white hover:opacity-90 focus:opacity-90 active:opacity-80 transition-all"
             >
-              <svg
-                className={`${isOpen ? 'hidden' : 'block'} h-6 w-6`}
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-              <svg
-                className={`${isOpen ? 'block' : 'hidden'} h-6 w-6`}
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+            {isMenuOpen ? <FaTimes className="text-white" /> : <FaBars className="text-white" />}
             </button>
-          </div>
         </div>
 
         {/* Mobile menu */}
-        <div className={`${isOpen ? 'block' : 'hidden'} md:hidden py-2`}>
+        <div className={`navbar-mobile-menu ${isMenuOpen ? 'block' : 'hidden'}`}>
           {navLinks.map((link) => (
             <Link
               key={link.path}
               to={link.path}
-              className={`${
-                isActive(link.path)
-                  ? 'text-white bg-white/20'
-                  : 'text-white/80 hover:text-white hover:bg-white/10'
-              } flex items-center space-x-2 px-4 py-2 text-sm font-medium transition-colors duration-200`}
-              onClick={() => setIsOpen(false)}
+              className={`navbar-mobile-link ${isActive(link.path) ? 'active' : ''}`}
+              onClick={() => setIsMenuOpen(false)}
             >
               <span className="text-lg">{link.icon}</span>
               <span>{link.name}</span>
@@ -125,20 +107,20 @@ function Navbar() {
             <button
               onClick={() => {
                 logout();
-                setIsOpen(false);
+                setIsMenuOpen(false);
               }}
-              className="w-full text-left px-4 py-2 text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 flex items-center space-x-2"
+              className="navbar-mobile-link w-full text-left bg-[linear-gradient(135deg,_#1a365d_0%,_#2b6cb0_100%)] text-white hover:bg-[linear-gradient(135deg,_#dc2626_0%,_#991b1b_100%)] transition-all"
             >
-              <FaSignOutAlt />
+              <FaSignOutAlt className="text-white" />
               <span>Logout</span>
             </button>
           ) : (
             <Link
               to="/auth"
-              className="block px-4 py-2 text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 flex items-center space-x-2"
-              onClick={() => setIsOpen(false)}
+              className="navbar-mobile-link bg-[linear-gradient(135deg,_#1a365d_0%,_#2b6cb0_100%)] text-white hover:bg-[linear-gradient(135deg,_#059669_0%,_#065f46_100%)] transition-all"
+              onClick={() => setIsMenuOpen(false)}
             >
-              <FaSignInAlt />
+              <FaSignInAlt className="text-white" />
               <span>Login</span>
             </Link>
           )}
