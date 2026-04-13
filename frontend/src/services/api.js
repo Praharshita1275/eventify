@@ -6,7 +6,9 @@ const getBaseUrl = () => {
     return process.env.REACT_APP_API_URL;
   }
   // Default to port 5001 in development, or relative path in production
-  return process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:5001/api';
+  return process.env.NODE_ENV === 'production'
+  ? 'https://eventify-mqrv.onrender.com/api'
+  : 'http://localhost:5001/api';
 };
 
 // Create axios instance with default config
