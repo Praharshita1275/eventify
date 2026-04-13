@@ -51,7 +51,10 @@ app.use(hpp());
 
 // Enable CORS with specific options
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: [
+    'http://localhost:3000',
+    'https://your-vercel-url.vercel.app' // 🔴 replace this with your actual Vercel URL
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -72,13 +75,7 @@ app.get('/api/test', (req, res) => {
 // Error handling middleware
 app.use(errorHandler);
 
-// Serve static assets in production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../frontend/build')));
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../frontend/build', 'index.html'));
-  });
-}
+// ❌ REMOVED frontend static serving block (causing Render error)
 
 const PORT = process.env.PORT || 5000;
 
